@@ -150,6 +150,17 @@
         type: String,
         default: 'nav',
       },
+
+      /**
+       * Ignore first hash if routing mode is enabled
+       *
+       * @default false
+       * @type {Boolean}
+       */
+      routing: {
+        type: Boolean,
+        default: false,
+      },
     },
 
     data() {
@@ -425,9 +436,19 @@
        */
       scrollToHashElement() {
         const { hash } = window.location;
-        if (!hash) return;
+        let windowHash = hash;
+        const index = windowHash.lastIndexOf('#');
+        if (this.routing) {
+          if (index > 0) {
+            // there is a real hash location
+            windowHash = windowHash.substring(index);
+          } else {
+            return;
+          }
+        }
+        if (!windowHash) return;
 
-        const hashElement = document.querySelector(decodeURI(hash));
+        const hashElement = document.querySelector(decodeURI(windowHash));
         if (!hashElement) return;
 
         window.location.hash = ''; // Clears the hash to prevent scroll from jumping
